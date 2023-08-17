@@ -32,7 +32,7 @@ func (r *Req) Run() (ResponseData, error) {
 	var SuccessCount int
 	var responseData ResponseData
 	responseData.MinimumTime = math.Inf(1)
-	log.Printf("Index\tTime\tDelivered")
+	//log.Printf("Index\tTime\tDelivered")
 
 	for result := range results {
 		//log.Printf("%d\t%f\t%t", result.Index, result.Time, result.Success)
@@ -84,7 +84,7 @@ func (r *Req) loadTarget(ch chan ResponseTime, done chan bool, index int) {
 	start := time.Now()
 	res, err := http.Get(r.URL)
 	if err != nil {
-		log.Println("error hitting the server", err)
+		//log.Println("error hitting the server", err)
 		ch <- ResponseTime{
 			Time:    time.Since(start).Seconds(),
 			Success: false,
@@ -105,7 +105,7 @@ func processReq(responseArr []ResponseTime, interval int) []ResponseTime {
 
 	var output []ResponseTime
 	for i := 0; i < len(responseArr); i += interval {
-		log.Printf("%d\t%f\t%t", responseArr[i].Index, responseArr[i].Time, responseArr[i].Success)
+		//log.Printf("%d\t%f\t%t", responseArr[i].Index, responseArr[i].Time, responseArr[i].Success)
 		output = append(output, responseArr[i])
 	}
 

@@ -17,4 +17,5 @@ func TestReq_Run(t *testing.T) {
 	if len(data.Responses) != req.NumberOfRequests {
 		t.Errorf("Failed number is meant to be equal")
 	}
+	//table.RenderTable(data)
 }
