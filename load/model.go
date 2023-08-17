@@ -1,6 +1,9 @@
 package load
 
-import "errors"
+import (
+	"errors"
+	"net/http"
+)
 
 type ResponseData struct {
 	AverageResponseTime float64        `json:"average_response_time"`
@@ -17,9 +20,11 @@ type ResponseTime struct {
 }
 
 type Req struct {
+	ReqType          string `json:"req_type"`
 	NumberOfRequests int    `json:"number_of_requests"`
 	URL              string `json:"url"`
 	Interval         int    `json:"interval"`
+	Func             *http.Request
 }
 
 func (r *Req) validate() error {

@@ -12,11 +12,11 @@ func RenderTable(data load.ResponseData) {
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetHeader([]string{"Index", "Time Taken", "Throughput"})
 	table.AppendBulk(arr)
-	table.SetFooter([]string{"", "Avg Time", fmt.Sprintf("%.2f", data.AverageResponseTime)})
-	table.SetFooter([]string{"", "Min Time", fmt.Sprintf("%.2f", data.MinimumTime)})
-	table.SetFooter([]string{"", "Max Time", fmt.Sprintf("%.2f", data.MaximumTime)})
-	table.SetFooter([]string{"", "Success Rate", fmt.Sprintf("%.2f %", data.SuccessRate)})
-	table.SetFooter([]string{"", "Error Rate", fmt.Sprintf("%.2f %", data.ErrorRate)})
+	//table.SetFooter([]string{"", "Avg Time", fmt.Sprintf("%.2f", data.AverageResponseTime)})
+	//table.SetFooter([]string{"", "Min Time", fmt.Sprintf("%.2f", data.MinimumTime)})
+	//table.SetFooter([]string{"", "Max Time", fmt.Sprintf("%.2f", data.MaximumTime)})
+	//table.SetFooter([]string{"", "Success Rate", fmt.Sprintf("%.2f %", data.SuccessRate)})
+	//table.SetFooter([]string{"", "Error Rate", fmt.Sprintf("%.2f %", data.ErrorRate)})
 	table.Render()
 }
 func processDataArr(data []load.ResponseTime) [][]string {
