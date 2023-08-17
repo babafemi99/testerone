@@ -3,13 +3,14 @@ package table
 import (
 	"github.com/babafemi99/testerone/load"
 	"github.com/olekukonko/tablewriter"
+	"net/http"
 	"os"
 	"testing"
 )
 
 func TestRenderTable(t *testing.T) {
 	req := load.Req{
-		NumberOfRequests: 250,
+		NumberOfRequests: 50,
 		URL:              "http://localhost:1010/ping",
 		//URL:      "https://www.google.com/",
 		//URL:      "http://localhost:2020/process",
@@ -34,4 +35,21 @@ func TestRenderTable1(t *testing.T) {
 
 	table.AppendBulk(data)
 	table.Render()
+}
+
+func TestCustomReq(t *testing.T) {
+	req, err := http.NewRequest("GET", "http://localhost:1010/ping", nil)
+	if err != nil {
+		return
+	}
+
+	req22 := load.Req{
+		ReqType:          "custom",
+		NumberOfRequests: 250,
+		URL:              "",
+		Interval:         0,
+		Func:             req,
+	}
+	run, _ := req22.Run()
+	RenderTable(run)
 }
