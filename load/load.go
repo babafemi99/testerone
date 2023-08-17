@@ -2,11 +2,18 @@ package load
 
 import (
 	"log"
+	"math"
 	"net/http"
 	"time"
 )
 
-func (r *Req) Run() ResponseData {
+func (r *Req) Run() (ResponseData, error) {
+
+	err := r.validate()
+	if err != nil {
+		return ResponseData{}, err
+	}
+
 	results := make(chan ResponseTime, r.NumberOfRequests)
 	done := make(chan bool, r.NumberOfRequests)
 
@@ -20,11 +27,11 @@ func (r *Req) Run() ResponseData {
 	close(results)
 	close(done)
 
-	log.Println("error count is :-", errCount)
 	var sumTime float64
 	var errorCount int
 	var SuccessCount int
 	var responseData ResponseData
+	responseData.MinimumTime = math.Inf(1)
 	log.Printf("Index\tTime\tDelivered")
 
 	for result := range results {
@@ -54,7 +61,7 @@ func (r *Req) Run() ResponseData {
 	processReq(responseData.Responses, r.Interval)
 
 	responseData.AverageResponseTime = sumTime / float64(r.NumberOfRequests)
-	responseData.SuccessRate = float64(SuccessCount/r.NumberOfRequests) * 100
+	responseData.SuccessRate = float64(errorCount) / float64(r.NumberOfRequests) * 100
 	responseData.ErrorRate = 100 - responseData.SuccessRate
 
 	log.Println("response average time- ", responseData.AverageResponseTime)
@@ -63,7 +70,7 @@ func (r *Req) Run() ResponseData {
 	log.Println("response maximum time- ", responseData.MaximumTime)
 	log.Println("response minimum time- ", responseData.MinimumTime)
 
-	return responseData
+	return responseData, nil
 }
 
 var errCount int

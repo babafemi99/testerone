@@ -1,5 +1,7 @@
 package load
 
+import "errors"
+
 type ResponseData struct {
 	AverageResponseTime float64        `json:"average_response_time"`
 	ErrorRate           float64        `json:"error_rate"`
@@ -18,4 +20,11 @@ type Req struct {
 	NumberOfRequests int    `json:"number_of_requests"`
 	URL              string `json:"url"`
 	Interval         int    `json:"interval"`
+}
+
+func (r *Req) validate() error {
+	if r.NumberOfRequests < r.Interval {
+		return errors.New("number of requests must be more than intervals")
+	}
+	return nil
 }
