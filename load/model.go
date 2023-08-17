@@ -17,4 +17,5 @@ type ResponseTime struct {
 type Req struct {
 	NumberOfRequests int    `json:"number_of_requests"`
 	URL              string `json:"url"`
+	Interval         int    `json:"interval"`
 }
