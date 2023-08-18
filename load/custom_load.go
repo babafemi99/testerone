@@ -7,21 +7,21 @@ import (
 	"time"
 )
 
-func (r *Req) Run() (ResponseData, error) {
+func (c *CustomReq) Run() (ResponseData, error) {
 
-	err := r.validate()
+	err := c.validate()
 	if err != nil {
 		return ResponseData{}, err
 	}
 
-	results := make(chan ResponseTime, r.NumberOfRequests)
-	done := make(chan bool, r.NumberOfRequests)
+	results := make(chan ResponseTime, c.NumberOfRequests)
+	done := make(chan bool, c.NumberOfRequests)
 
-	for i := 1; i <= r.NumberOfRequests; i++ {
-		go r.loadTarget(results, done, i)
+	for i := 1; i <= c.NumberOfRequests; i++ {
+		go c.loadCustomTarget(results, done)
 	}
 
-	for i := 1; i <= r.NumberOfRequests; i++ {
+	for i := 1; i <= c.NumberOfRequests; i++ {
 		<-done
 	}
 
@@ -55,14 +55,14 @@ func (r *Req) Run() (ResponseData, error) {
 		responseData.Responses = append(responseData.Responses, result)
 	}
 
-	if r.Interval == 0 {
-		r.Interval = 1
+	if c.Interval == 0 {
+		c.Interval = 1
 	}
 
-	processReq(responseData.Responses, r.Interval)
+	processReq(responseData.Responses, c.Interval)
 
-	responseData.AverageResponseTime = sumTime / float64(r.NumberOfRequests)
-	responseData.SuccessRate = float64(SuccessCount) / float64(r.NumberOfRequests) * 100
+	responseData.AverageResponseTime = sumTime / float64(c.NumberOfRequests)
+	responseData.SuccessRate = float64(SuccessCount) / float64(c.NumberOfRequests) * 100
 	responseData.ErrorRate = 100 - responseData.SuccessRate
 
 	fmt.Printf("response average time :%.4fs\n", responseData.AverageResponseTime)
@@ -72,18 +72,19 @@ func (r *Req) Run() (ResponseData, error) {
 	fmt.Printf("response minimum time :%.4fs\n", responseData.MinimumTime)
 
 	return responseData, nil
+
 }
 
-var errCount int
-
-func (r *Req) loadTarget(ch chan ResponseTime, done chan bool, index int) {
-
+func (c *CustomReq) loadCustomTarget(ch chan ResponseTime, done chan bool) {
 	defer func() {
 		done <- true
 	}()
 
 	start := time.Now()
-	res, err := http.Get(r.URL)
+
+	cl := http.Client{}
+
+	res, err := cl.Do(c.Func)
 	if err != nil {
 		//log.Println("error hitting the server", err)
 		ch <- ResponseTime{
@@ -99,5 +100,4 @@ func (r *Req) loadTarget(ch chan ResponseTime, done chan bool, index int) {
 		Time:    time.Since(start).Seconds(),
 		Success: true,
 	}
-
 }

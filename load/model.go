@@ -20,6 +20,20 @@ type ResponseTime struct {
 }
 
 type Req struct {
+	NumberOfRequests int    `json:"number_of_requests"`
+	URL              string `json:"url"`
+	Interval         int    `json:"interval"`
+}
+
+func (r *Req) validate() error {
+	if r.NumberOfRequests < r.Interval {
+		return errors.New("number of requests must be more than intervals")
+	}
+	return nil
+}
+
+// CustomReq :custom requests have more options for making a http Requests
+type CustomReq struct {
 	ReqType          string `json:"req_type"`
 	NumberOfRequests int    `json:"number_of_requests"`
 	URL              string `json:"url"`
@@ -27,8 +41,8 @@ type Req struct {
 	Func             *http.Request
 }
 
-func (r *Req) validate() error {
-	if r.NumberOfRequests < r.Interval {
+func (c *CustomReq) validate() error {
+	if c.NumberOfRequests < c.Interval {
 		return errors.New("number of requests must be more than intervals")
 	}
 	return nil
