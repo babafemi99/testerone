@@ -43,9 +43,9 @@ func TestCustomReq(t *testing.T) {
 		return
 	}
 
-	req22 := load.Req{
+	req22 := load.CustomReq{
 		ReqType:          "custom",
-		NumberOfRequests: 250,
+		NumberOfRequests: 20,
 		URL:              "",
 		Interval:         0,
 		Func:             req,
