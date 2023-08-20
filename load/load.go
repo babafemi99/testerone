@@ -11,7 +11,7 @@ func (r *Req) Run() (ResponseData, error) {
 
 	err := r.validate()
 	if err != nil {
-		return ResponseData{}, err
+		return ResponseData{}, fmt.Errorf("r.validate: %w", err)
 	}
 
 	results := make(chan ResponseTime, r.NumberOfRequests)
