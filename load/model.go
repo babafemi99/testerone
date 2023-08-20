@@ -2,7 +2,6 @@ package load
 
 import (
 	"errors"
-	"net/http"
 )
 
 type ResponseData struct {
@@ -34,11 +33,17 @@ func (r *Req) validate() error {
 
 // CustomReq :custom requests have more options for making a http Requests
 type CustomReq struct {
-	ReqType          string `json:"req_type"`
-	NumberOfRequests int    `json:"number_of_requests"`
-	URL              string `json:"url"`
-	Interval         int    `json:"interval"`
-	Func             *http.Request
+	ReqType          string           `json:"req_type"`
+	NumberOfRequests int              `json:"number_of_requests"`
+	URL              string           `json:"url"`
+	Interval         int              `json:"interval"`
+	Func2            []CustomFunction `json:"func_2"`
+}
+
+type CustomFunction struct {
+	Method string `json:"method"`
+	URL    string `json:"url"`
+	Body   []byte `json:"body"`
 }
 
 func (c *CustomReq) validate() error {
