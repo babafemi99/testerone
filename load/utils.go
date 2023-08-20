@@ -1,7 +1,9 @@
 package load
 
-func processReq(responseArr []ResponseTime, interval int) []ResponseTime {
+import "log"
 
+func processReq(responseArr []ResponseTime, interval int) []ResponseTime {
+	log.Println("interval is", interval)
 	var output []ResponseTime
 	for i := 0; i < len(responseArr); i += interval {
 		//log.Printf("%d\t%f\t%t", responseArr[i].Index, responseArr[i].Time, responseArr[i].Success)

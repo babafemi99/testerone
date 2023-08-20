@@ -6,10 +6,10 @@ import (
 
 func TestReq_Run(t *testing.T) {
 	req := Req{
-		NumberOfRequests: 250,
-		URL:              "http://localhost:1010/ping",
+		NumberOfRequests: 100,
+		//URL:              "http://localhost:1010/ping",
 		//URL:      "https://www.google.com/",
-		//URL:      "http://localhost:2020/process",
+		URL:      "http://localhost:2020",
 		Interval: 1,
 	}
 	data, _ := req.Run()

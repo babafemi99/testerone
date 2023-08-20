@@ -1,14 +1,16 @@
 package load
 
 import (
+	"bytes"
+	"errors"
 	"fmt"
+	"log"
 	"math"
 	"net/http"
 	"time"
 )
 
 func (c *CustomReq) Run() (ResponseData, error) {
-
 	err := c.validate()
 	if err != nil {
 		return ResponseData{}, err
@@ -18,7 +20,7 @@ func (c *CustomReq) Run() (ResponseData, error) {
 	done := make(chan bool, c.NumberOfRequests)
 
 	for i := 1; i <= c.NumberOfRequests; i++ {
-		go c.loadCustomTarget(results, done)
+		go c.loadCustomTarget2(results, done)
 	}
 
 	for i := 1; i <= c.NumberOfRequests; i++ {
@@ -59,7 +61,7 @@ func (c *CustomReq) Run() (ResponseData, error) {
 		c.Interval = 1
 	}
 
-	processReq(responseData.Responses, c.Interval)
+	responseData.Responses = processReq(responseData.Responses, c.Interval)
 
 	responseData.AverageResponseTime = sumTime / float64(c.NumberOfRequests)
 	responseData.SuccessRate = float64(SuccessCount) / float64(c.NumberOfRequests) * 100
@@ -75,18 +77,17 @@ func (c *CustomReq) Run() (ResponseData, error) {
 
 }
 
-func (c *CustomReq) loadCustomTarget(ch chan ResponseTime, done chan bool) {
+func (c *CustomReq) loadCustomTarget2(ch chan ResponseTime, done chan bool) {
 	defer func() {
 		done <- true
 	}()
 
+	// start time
 	start := time.Now()
 
-	cl := http.Client{}
-
-	res, err := cl.Do(c.Func)
+	// call the custom function method and handle in case of errors
+	err := c.callCustomFunc()
 	if err != nil {
-		//log.Println("error hitting the server", err)
 		ch <- ResponseTime{
 			Time:    time.Since(start).Seconds(),
 			Success: false,
@@ -94,10 +95,56 @@ func (c *CustomReq) loadCustomTarget(ch chan ResponseTime, done chan bool) {
 		errCount++
 		return
 	}
-	defer res.Body.Close()
 
 	ch <- ResponseTime{
 		Time:    time.Since(start).Seconds(),
 		Success: true,
 	}
+}
+
+func (c *CustomReq) callCustomFunc() error {
+
+	for _, fn := range c.Func2 {
+		err := fn.hitReq()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (cf *CustomFunction) hitReq() error {
+
+	var req *http.Request
+	var err error
+
+	switch cf.Method {
+
+	case "POST":
+		req, err = http.NewRequest(cf.Method, cf.URL, bytes.NewBuffer(cf.Body))
+		if err != nil {
+			log.Println("error", err)
+			return err
+		}
+	case "GET":
+		req, err = http.NewRequest(cf.Method, cf.URL, nil)
+		if err != nil {
+			log.Println("error", err)
+			return err
+		}
+
+	default:
+		return errors.New(`Method must be "POST" or "GET" `)
+
+	}
+
+	cl := http.Client{}
+
+	res, err := cl.Do(req)
+	if err != nil {
+		return err
+	}
+
+	res.Body.Close()
+	return nil
 }
