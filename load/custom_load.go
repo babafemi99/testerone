@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"log"
 	"math"
 	"net/http"
 	"time"
@@ -13,7 +12,7 @@ import (
 func (c *CustomReq) Run() (ResponseData, error) {
 	err := c.validate()
 	if err != nil {
-		return ResponseData{}, err
+		return ResponseData{}, fmt.Errorf(" Run: %w", err)
 	}
 
 	results := make(chan ResponseTime, c.NumberOfRequests)
@@ -107,7 +106,7 @@ func (c *CustomReq) callCustomFunc() error {
 	for _, fn := range c.Func2 {
 		err := fn.hitReq()
 		if err != nil {
-			return err
+			return fmt.Errorf("fn.hitReq error: %w", err)
 		}
 	}
 	return nil
@@ -123,14 +122,12 @@ func (cf *CustomFunction) hitReq() error {
 	case "POST":
 		req, err = http.NewRequest(cf.Method, cf.URL, bytes.NewBuffer(cf.Body))
 		if err != nil {
-			log.Println("error", err)
-			return err
+			return fmt.Errorf("http.NewRequest Error: %w", err)
 		}
 	case "GET":
 		req, err = http.NewRequest(cf.Method, cf.URL, nil)
 		if err != nil {
-			log.Println("error", err)
-			return err
+			return fmt.Errorf("http.NewRequest Error: %w", err)
 		}
 
 	default:
@@ -142,7 +139,7 @@ func (cf *CustomFunction) hitReq() error {
 
 	res, err := cl.Do(req)
 	if err != nil {
-		return err
+		return fmt.Errorf("cl.Do error: %w", err)
 	}
 
 	res.Body.Close()
