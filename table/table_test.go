@@ -1,11 +1,11 @@
 package table
 
 import (
-	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"github.com/babafemi99/testerone/load"
+	"github.com/olekukonko/tablewriter"
 	"log"
+	"os"
 	"testing"
 )
 
@@ -24,37 +24,19 @@ func TestRenderTable(t *testing.T) {
 }
 
 func TestRenderTable1(t *testing.T) {
-	type Data struct {
-		BinaryData []byte `json:"binaryData"`
-	}
-	binaryData := []byte{1, 2, 3, 4, 5}
 
-	encodedData := base64.StdEncoding.EncodeToString(binaryData)
-
-	data := Data{
-		BinaryData: []byte(encodedData),
+	data := [][]string{
+		{"A", "The Good", "500"},
+		{"B", "The Very very Bad Man", "288"},
+		{"C", "The Ugly", "120"},
+		{"D", "The Gopher", "800"},
 	}
 
-	jsonBytes, err := json.Marshal(data)
-	if err != nil {
-		fmt.Println("Error marshaling struct:", err)
-		return
-	}
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{"Name", "Sign", "Rating"})
 
-	fmt.Println(string(jsonBytes))
-
-	//data := [][]string{
-	//	[]string{"A", "The Good", "500"},
-	//	[]string{"B", "The Very very Bad Man", "288"},
-	//	[]string{"C", "The Ugly", "120"},
-	//	[]string{"D", "The Gopher", "800"},
-	//}
-	//
-	//table := tablewriter.NewWriter(os.Stdout)
-	//table.SetHeader([]string{"Name", "Sign", "Rating"})
-	//
-	//table.AppendBulk(data)
-	//table.Render()
+	table.AppendBulk(data)
+	table.Render()
 }
 
 func TestCustomReq2(t *testing.T) {
