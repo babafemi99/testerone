@@ -2,25 +2,8 @@ package load
 
 import (
 	"encoding/json"
-	"net/http"
 	"testing"
 )
-
-func Test_Custom(t *testing.T) {
-	req, err := http.NewRequest("GET", "http://localhost:1010/ping", nil)
-	if err != nil {
-		return
-	}
-
-	req22 := CustomReq{
-		ReqType:          "custom",
-		NumberOfRequests: 10000,
-		URL:              "",
-		Interval:         0,
-		Func:             req,
-	}
-	req22.Run()
-}
 
 func TestCustomReq_loadCustomTarget2(t *testing.T) {
 
@@ -90,3 +73,19 @@ func TestCustomReq_loadCustomTarget2(t *testing.T) {
 	}
 	req22.Run()
 }
+
+//////////NTEST/////////
+
+//func TestNTest(t *testing.T) {
+//	r := Req{
+//		NumberOfRequests: 10,
+//		URL:              "http://localhost:1010/post1",
+//		Interval:         0,
+//	}
+//
+//	worker := func(id int, done chan bool, wg *sync.WaitGroup) {
+//		defer wg.Done()
+//			r.Run()
+//		< - time.After()
+//	}
+//}

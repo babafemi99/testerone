@@ -9,6 +9,10 @@ import (
 	"time"
 )
 
+func (c *CustomReq) RunAfter() ([]ResponseData, error) {
+	return c.runX(c.RunAfterDuration, c.RunDuration)
+}
+
 func (c *CustomReq) Run() (ResponseData, error) {
 	err := c.validate()
 	if err != nil {
@@ -144,4 +148,18 @@ func (cf *CustomFunction) hitReq() error {
 
 	res.Body.Close()
 	return nil
+}
+
+func (c *CustomReq) runX(timeInterval time.Duration, n int) ([]ResponseData, error) {
+	var data []ResponseData
+	ticker := time.NewTicker(timeInterval)
+	for i := 0; i < n; i++ {
+		run, err := c.Run()
+		if err != nil {
+			return []ResponseData{}, err
+		}
+		data = append(data, run)
+		<-ticker.C
+	}
+	return data, nil
 }
