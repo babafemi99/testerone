@@ -2,6 +2,7 @@ package load
 
 import (
 	"errors"
+	"time"
 )
 
 type ResponseData struct {
@@ -19,9 +20,11 @@ type ResponseTime struct {
 }
 
 type Req struct {
-	NumberOfRequests int    `json:"number_of_requests"`
-	URL              string `json:"url"`
-	Interval         int    `json:"interval"`
+	NumberOfRequests int           `json:"number_of_requests"`
+	URL              string        `json:"url"`
+	Interval         int           `json:"interval"`
+	RunAfterDuration time.Duration `json:"run_after_duration"`
+	RunDuration      int           `json:"run_duration"`
 }
 
 func (r *Req) validate() error {
@@ -38,6 +41,8 @@ type CustomReq struct {
 	URL              string           `json:"url"`
 	Interval         int              `json:"interval"`
 	Func2            []CustomFunction `json:"func_2"`
+	RunAfterDuration time.Duration    `json:"run_after_duration"`
+	RunDuration      int              `json:"run_duration"`
 }
 
 type CustomFunction struct {
