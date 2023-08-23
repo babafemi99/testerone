@@ -8,6 +8,13 @@ import (
 )
 
 func RenderTable(data load.ResponseData) {
+
+	fmt.Printf("response average time :%.4fs\n", data.AverageResponseTime)
+	fmt.Printf("response error rate: %.2f%%\n", data.ErrorRate)
+	fmt.Printf("response success rate: %.2f%%\n", data.SuccessRate)
+	fmt.Printf("response maximum time :%.4fs\n", data.MaximumTime)
+	fmt.Printf("response minimum time :%.4fs\n", data.MinimumTime)
+
 	arr := processDataArr(data.Responses)
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetHeader([]string{"Index", "Time Taken", "Throughput"})

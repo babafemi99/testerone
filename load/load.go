@@ -69,11 +69,11 @@ func (r *Req) Run() (ResponseData, error) {
 	responseData.SuccessRate = float64(SuccessCount) / float64(r.NumberOfRequests) * 100
 	responseData.ErrorRate = 100 - responseData.SuccessRate
 
-	fmt.Printf("response average time :%.4fs\n", responseData.AverageResponseTime)
-	fmt.Printf("response error rate: %.2f%%\n", responseData.ErrorRate)
-	fmt.Printf("response success rate: %.2f%%\n", responseData.SuccessRate)
-	fmt.Printf("response maximum time :%.4fs\n", responseData.MaximumTime)
-	fmt.Printf("response minimum time :%.4fs\n", responseData.MinimumTime)
+	//fmt.Printf("response average time :%.4fs\n", responseData.AverageResponseTime)
+	//fmt.Printf("response error rate: %.2f%%\n", responseData.ErrorRate)
+	//fmt.Printf("response success rate: %.2f%%\n", responseData.SuccessRate)
+	//fmt.Printf("response maximum time :%.4fs\n", responseData.MaximumTime)
+	//fmt.Printf("response minimum time :%.4fs\n", responseData.MinimumTime)
 
 	return responseData, nil
 }
@@ -112,7 +112,7 @@ func (r *Req) runX(timeInterval time.Duration, n int) ([]ResponseData, error) {
 	for i := 0; i < n; i++ {
 		run, err := r.Run()
 		if err != nil {
-			return []ResponseData{}, err
+			return []ResponseData{}, fmt.Errorf("r.Run > %w", err)
 		}
 		data = append(data, run)
 		<-ticker.C
