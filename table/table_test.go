@@ -205,7 +205,7 @@ func TestReq_RunX_Custom(t *testing.T) {
 
 	req22 := load.CustomReq{
 		ReqType:          "custom",
-		NumberOfRequests: 100,
+		NumberOfRequests: 200,
 		URL:              "",
 		Interval:         10,
 		Func2: []load.CustomFunction{
@@ -225,14 +225,15 @@ func TestReq_RunX_Custom(t *testing.T) {
 				Body:   jb3,
 			},
 		},
-		RunAfterDuration: 5 * time.Second,
-		RunDuration:      10,
+		RunAfterDuration: 10 * time.Nanosecond,
+		RunDuration:      500,
 	}
-
+	now := time.Now()
 	run, err := req22.RunAfter()
 	if err != nil {
 		log.Println("error is ", err)
 	}
+	log.Println("total duration is", time.Since(now))
 
 	for i, a := range run {
 		log.Println("Iteration: ", i+1)

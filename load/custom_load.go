@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"log"
 	"math"
 	"net/http"
 	"time"
@@ -69,12 +70,6 @@ func (c *CustomReq) Run() (ResponseData, error) {
 	responseData.AverageResponseTime = sumTime / float64(c.NumberOfRequests)
 	responseData.SuccessRate = float64(SuccessCount) / float64(c.NumberOfRequests) * 100
 	responseData.ErrorRate = 100 - responseData.SuccessRate
-
-	fmt.Printf("response average time :%.4fs\n", responseData.AverageResponseTime)
-	fmt.Printf("response error rate: %.2f%%\n", responseData.ErrorRate)
-	fmt.Printf("response success rate: %.2f%%\n", responseData.SuccessRate)
-	fmt.Printf("response maximum time :%.4fs\n", responseData.MaximumTime)
-	fmt.Printf("response minimum time :%.4fs\n", responseData.MinimumTime)
 
 	return responseData, nil
 
@@ -156,9 +151,10 @@ func (c *CustomReq) runX(timeInterval time.Duration, n int) ([]ResponseData, err
 	for i := 0; i < n; i++ {
 		run, err := c.Run()
 		if err != nil {
-			return []ResponseData{}, err
+			return []ResponseData{}, fmt.Errorf("c.Run > %w", err)
 		}
 		data = append(data, run)
+		log.Println("request"+" "+"completed", i+1)
 		<-ticker.C
 	}
 	return data, nil
