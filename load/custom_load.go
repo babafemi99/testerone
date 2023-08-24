@@ -136,6 +136,12 @@ func (cf *CustomFunction) hitReq() error {
 
 	cl := http.Client{}
 
+	if len(cf.Headers) > 0 {
+		for _, header := range cf.Headers {
+			req.Header.Set(header.Name, header.Value)
+		}
+	}
+
 	res, err := cl.Do(req)
 	if err != nil {
 		return fmt.Errorf("cl.Do error: %w", err)
