@@ -45,10 +45,16 @@ type CustomReq struct {
 	RunDuration      int              `json:"run_duration"`
 }
 
+type Header struct {
+	Name  string `json:"name"`
+	Value string `json:"value"`
+}
+
 type CustomFunction struct {
-	Method string `json:"method"`
-	URL    string `json:"url"`
-	Body   []byte `json:"body"`
+	Method  string   `json:"method"`
+	URL     string   `json:"url"`
+	Body    []byte   `json:"body"`
+	Headers []Header `json:"headers"`
 }
 
 func (c *CustomReq) validate() error {
