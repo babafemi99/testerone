@@ -50,11 +50,47 @@ type Header struct {
 	Value string `json:"value"`
 }
 
+func (h *Header) validate() error {
+	if h.Name == "" {
+		return errors.New("header must have a name")
+	}
+
+	if h.Value == "" {
+		return errors.New("header must have a value")
+	}
+
+	return nil
+}
+
+type Cookie struct {
+	Name      string `json:"name"`
+	Value     string `json:"value"`
+	ExpiresAt string `json:"expires_at"`
+}
+
+func (c *Cookie) validate() (time.Duration, error) {
+	if c.Name == "" {
+		return 0, errors.New("cookie must have a name")
+	}
+
+	if c.Value == "" {
+		return 0, errors.New("cookie must have a value")
+	}
+
+	dur, err := time.ParseDuration(c.ExpiresAt)
+	if err != nil {
+		return 0, errors.New("invalid cookie duration")
+	}
+
+	return dur, nil
+}
+
 type CustomFunction struct {
 	Method  string   `json:"method"`
 	URL     string   `json:"url"`
 	Body    []byte   `json:"body"`
 	Headers []Header `json:"headers"`
+	Cookies []Cookie `json:"cookies"`
 }
 
 func (c *CustomReq) validate() error {

@@ -136,10 +136,29 @@ func (cf *CustomFunction) hitReq() error {
 
 	cl := http.Client{}
 
-	if len(cf.Headers) > 0 {
-		for _, header := range cf.Headers {
-			req.Header.Set(header.Name, header.Value)
+	for _, header := range cf.Headers {
+		err := header.validate()
+		if err != nil {
+			return fmt.Errorf("header.validate: %w", err)
 		}
+
+		req.Header.Set(header.Name, header.Value)
+	}
+
+	for _, cookie := range cf.Cookies {
+
+		dur, err := cookie.validate()
+		if err != nil {
+			return fmt.Errorf("cookie.Validate: %w", err)
+		}
+
+		ck := &http.Cookie{
+			Name:    cookie.Name,
+			Value:   cookie.ExpiresAt,
+			Expires: time.Now().Add(dur),
+		}
+
+		req.AddCookie(ck)
 	}
 
 	res, err := cl.Do(req)
