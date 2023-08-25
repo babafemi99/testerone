@@ -2,6 +2,7 @@ package load
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"log"
@@ -10,14 +11,62 @@ import (
 	"time"
 )
 
-func (c *CustomReq) RunAfter() ([]ResponseData, error) {
-	return c.runX(c.RunAfterDuration, c.RunDuration)
+type RespDataCh struct {
+	ResponseData
+	error
+}
+
+type RespDataChCtx struct {
+	Results []ResponseData
+	error
+}
+
+func (c *CustomReq) RunWithContext(ctx context.Context) (ResponseData, error) {
+	ResCh := make(chan RespDataCh)
+
+	go func() {
+		run, err := c.Run()
+		ResCh <- RespDataCh{
+			ResponseData: run,
+			error:        err,
+		}
+	}()
+
+	for {
+		select {
+		case <-ctx.Done():
+			return ResponseData{}, errors.New("time out, operation took too long")
+		case res := <-ResCh:
+			return res.ResponseData, res.error
+		}
+	}
+}
+
+func (c *CustomReq) RunAfterWithContext(ctx context.Context) ([]ResponseData, error) {
+	ResCh := make(chan RespDataChCtx)
+
+	go func() {
+		run, err := c.RunAfter()
+		ResCh <- RespDataChCtx{
+			Results: run,
+			error:   err,
+		}
+	}()
+
+	for {
+		select {
+		case <-ctx.Done():
+			return []ResponseData{}, errors.New("time out, operation took too long")
+		case res := <-ResCh:
+			return res.Results, res.error
+		}
+	}
 }
 
 func (c *CustomReq) Run() (ResponseData, error) {
 	err := c.validate()
 	if err != nil {
-		return ResponseData{}, fmt.Errorf(" Run: %w", err)
+		return ResponseData{}, fmt.Errorf(" run: %w", err)
 	}
 
 	results := make(chan ResponseTime, c.NumberOfRequests)
@@ -115,16 +164,26 @@ func (cf *CustomFunction) hitReq() error {
 
 	var req *http.Request
 	var err error
+	var ctx context.Context
+	var cancel context.CancelFunc
+
+	reqDur, err := time.ParseDuration(cf.Timeout)
+	if err != nil {
+		ctx = context.Background()
+	} else {
+		ctx, cancel = context.WithTimeout(ctx, reqDur)
+		defer cancel()
+	}
 
 	switch cf.Method {
 
 	case "POST":
-		req, err = http.NewRequest(cf.Method, cf.URL, bytes.NewBuffer(cf.Body))
+		req, err = http.NewRequestWithContext(ctx, cf.Method, cf.URL, bytes.NewBuffer(cf.Body))
 		if err != nil {
 			return fmt.Errorf("http.NewRequest Error: %w", err)
 		}
 	case "GET":
-		req, err = http.NewRequest(cf.Method, cf.URL, nil)
+		req, err = http.NewRequestWithContext(ctx, cf.Method, cf.URL, nil)
 		if err != nil {
 			return fmt.Errorf("http.NewRequest Error: %w", err)
 		}
@@ -170,13 +229,14 @@ func (cf *CustomFunction) hitReq() error {
 	return nil
 }
 
-func (c *CustomReq) runX(timeInterval time.Duration, n int) ([]ResponseData, error) {
+func (c *CustomReq) RunAfter() ([]ResponseData, error) {
 	var data []ResponseData
-	ticker := time.NewTicker(timeInterval)
-	for i := 0; i < n; i++ {
+
+	ticker := time.NewTicker(c.RunAfterDuration)
+	for i := 0; i < c.RunDuration; i++ {
 		run, err := c.Run()
 		if err != nil {
-			return []ResponseData{}, fmt.Errorf("c.Run > %w", err)
+			return []ResponseData{}, fmt.Errorf("c.run > %w", err)
 		}
 		data = append(data, run)
 		log.Println("request"+" "+"completed", i+1)

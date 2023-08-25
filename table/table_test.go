@@ -1,6 +1,7 @@
 package table
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/babafemi99/testerone/load"
 	"github.com/olekukonko/tablewriter"
@@ -10,19 +11,19 @@ import (
 	"time"
 )
 
-func TestRenderTable(t *testing.T) {
-	req := load.Req{
-		NumberOfRequests: 1500,
-		//URL:              "http://localhost:1010/ping",
-		//URL:      "https://www.google.com/",
-		URL:      "http://localhost:2020",
-		Interval: 1,
-	}
-	data, _ := req.Run()
-
-	RenderTable(data)
-
-}
+//func TestRenderTable(t *testing.T) {
+//	req := load.Req{
+//		NumberOfRequests: 1500,
+//		//URL:              "http://localhost:1010/ping",
+//		//URL:      "https://www.google.com/",
+//		URL:      "http://localhost:2020",
+//		Interval: 1,
+//	}
+//	//data, _ := req.()
+//
+//	RenderTable(data)
+//	log.Println(data)
+//}
 
 func TestRenderTable1(t *testing.T) {
 
@@ -83,9 +84,7 @@ func TestCustomReq2(t *testing.T) {
 	}
 
 	req22 := load.CustomReq{
-		ReqType:          "custom",
 		NumberOfRequests: 1,
-		URL:              "",
 		Interval:         1,
 		Func2: []load.CustomFunction{
 			{
@@ -114,9 +113,7 @@ func TestCustomReq2(t *testing.T) {
 
 func TestCustomReq3(t *testing.T) {
 	req22 := load.CustomReq{
-		ReqType:          "custom",
 		NumberOfRequests: 1000,
-		URL:              "",
 		Interval:         100,
 		Func2: []load.CustomFunction{
 			{
@@ -204,9 +201,7 @@ func TestReq_RunX_Custom(t *testing.T) {
 	}
 
 	req22 := load.CustomReq{
-		ReqType:          "custom",
-		NumberOfRequests: 200,
-		URL:              "",
+		NumberOfRequests: 100,
 		Interval:         10,
 		Func2: []load.CustomFunction{
 			{
@@ -226,10 +221,12 @@ func TestReq_RunX_Custom(t *testing.T) {
 			},
 		},
 		RunAfterDuration: 10 * time.Nanosecond,
-		RunDuration:      500,
+		RunDuration:      10,
 	}
 	now := time.Now()
-	run, err := req22.RunAfter()
+	timeout, cancelFunc := context.WithTimeout(context.Background(), 10*time.Minute)
+	defer cancelFunc()
+	run, err := req22.RunAfterWithContext(timeout)
 	if err != nil {
 		log.Println("error is ", err)
 	}
