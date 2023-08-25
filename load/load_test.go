@@ -12,7 +12,7 @@ func TestReq_Run(t *testing.T) {
 		URL:      "http://localhost:2020",
 		Interval: 1,
 	}
-	data, _ := req.Run()
+	data, _ := req.run()
 
 	if len(data.Responses) != req.NumberOfRequests {
 		t.Errorf("Failed number is meant to be equal")

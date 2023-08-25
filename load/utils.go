@@ -1,5 +1,10 @@
 package load
 
+import (
+	"fmt"
+	"time"
+)
+
 func processReq(responseArr []ResponseTime, interval int) []ResponseTime {
 	var output []ResponseTime
 	for i := 0; i < len(responseArr); i += interval {
@@ -8,4 +13,12 @@ func processReq(responseArr []ResponseTime, interval int) []ResponseTime {
 	}
 
 	return output
+}
+
+func getDuration(str string) (time.Duration, error) {
+	duration, err := time.ParseDuration(str)
+	if err != nil {
+		return 0, fmt.Errorf(str)
+	}
+	return duration, nil
 }

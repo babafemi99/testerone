@@ -11,7 +11,7 @@ func (r *Req) RunAfter() ([]ResponseData, error) {
 	return r.runX(r.RunAfterDuration, r.RunDuration)
 }
 
-func (r *Req) Run() (ResponseData, error) {
+func (r *Req) run() (ResponseData, error) {
 
 	err := r.validate()
 	if err != nil {
@@ -110,9 +110,9 @@ func (r *Req) runX(timeInterval time.Duration, n int) ([]ResponseData, error) {
 	var data []ResponseData
 	ticker := time.NewTicker(timeInterval)
 	for i := 0; i < n; i++ {
-		run, err := r.Run()
+		run, err := r.run()
 		if err != nil {
-			return []ResponseData{}, fmt.Errorf("r.Run > %w", err)
+			return []ResponseData{}, fmt.Errorf("r.run > %w", err)
 		}
 		data = append(data, run)
 		<-ticker.C
