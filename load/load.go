@@ -7,9 +7,7 @@ import (
 	"time"
 )
 
-func (r *Req) RunAfter() ([]ResponseData, error) {
-	return r.runX(r.RunAfterDuration, r.RunDuration)
-}
+var errCount int
 
 func (r *Req) run() (ResponseData, error) {
 
@@ -78,7 +76,19 @@ func (r *Req) run() (ResponseData, error) {
 	return responseData, nil
 }
 
-var errCount int
+func (r *Req) RunAfter() ([]ResponseData, error) {
+	var data []ResponseData
+	ticker := time.NewTicker(r.RunAfterDuration)
+	for i := 0; i < r.RunDuration; i++ {
+		run, err := r.run()
+		if err != nil {
+			return []ResponseData{}, fmt.Errorf("r.run > %w", err)
+		}
+		data = append(data, run)
+		<-ticker.C
+	}
+	return data, nil
+}
 
 func (r *Req) loadTarget(ch chan ResponseTime, done chan bool, index int) {
 
@@ -104,18 +114,4 @@ func (r *Req) loadTarget(ch chan ResponseTime, done chan bool, index int) {
 		Success: true,
 	}
 
-}
-
-func (r *Req) runX(timeInterval time.Duration, n int) ([]ResponseData, error) {
-	var data []ResponseData
-	ticker := time.NewTicker(timeInterval)
-	for i := 0; i < n; i++ {
-		run, err := r.run()
-		if err != nil {
-			return []ResponseData{}, fmt.Errorf("r.run > %w", err)
-		}
-		data = append(data, run)
-		<-ticker.C
-	}
-	return data, nil
 }

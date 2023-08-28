@@ -124,6 +124,22 @@ func (c *CustomReq) Run() (ResponseData, error) {
 
 }
 
+func (c *CustomReq) RunAfter() ([]ResponseData, error) {
+	var data []ResponseData
+
+	ticker := time.NewTicker(c.RunAfterDuration)
+	for i := 0; i < c.RunDuration; i++ {
+		run, err := c.Run()
+		if err != nil {
+			return []ResponseData{}, fmt.Errorf("c.run > %w", err)
+		}
+		data = append(data, run)
+		log.Println("request"+" "+"completed", i+1)
+		<-ticker.C
+	}
+	return data, nil
+}
+
 func (c *CustomReq) loadCustomTarget2(ch chan ResponseTime, done chan bool) {
 	defer func() {
 		done <- true
@@ -227,20 +243,4 @@ func (cf *CustomFunction) hitReq() error {
 
 	res.Body.Close()
 	return nil
-}
-
-func (c *CustomReq) RunAfter() ([]ResponseData, error) {
-	var data []ResponseData
-
-	ticker := time.NewTicker(c.RunAfterDuration)
-	for i := 0; i < c.RunDuration; i++ {
-		run, err := c.Run()
-		if err != nil {
-			return []ResponseData{}, fmt.Errorf("c.run > %w", err)
-		}
-		data = append(data, run)
-		log.Println("request"+" "+"completed", i+1)
-		<-ticker.C
-	}
-	return data, nil
 }
