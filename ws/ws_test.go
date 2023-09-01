@@ -1,7 +1,13 @@
 package ws
 
-import "testing"
+import (
+	"context"
+	"testing"
+	"time"
+)
 
 func Test_runListen(t *testing.T) {
-	runListen()
+	timeout, cancelFunc := context.WithTimeout(context.Background(), time.Minute*5)
+	defer cancelFunc()
+	final(timeout)
 }
