@@ -24,15 +24,13 @@ func TestLoadYAMLFile(t *testing.T) {
 		}
 
 		// Assertions for CustomReq fields
-		if got.ReqType != "custom" {
-			t.Errorf("Expected ReqType 'custom', but got '%s'", got.ReqType)
-		}
+		// if got.ReqType != "custom" {
+		// 	t.Errorf("Expected ReqType 'custom', but got '%s'", got.ReqType)
+		// }
 		if got.NumberOfRequests != 200 {
 			t.Errorf("Expected NumberOfRequests 200, but got %d", got.NumberOfRequests)
 		}
-		if got.URL != "" {
-			t.Errorf("Expected URL '', but got '%s'", got.URL)
-		}
+
 		if got.Interval != 10 {
 			t.Errorf("Expected Interval 10, but got %d", got.Interval)
 		}

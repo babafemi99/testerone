@@ -1,6 +1,5 @@
 req_type: "custom"
 number_of_requests: 200
-url: ""
 interval: 10
 func_2:
   - method: "POST"
@@ -21,3 +20,5 @@ func_2:
       gender: "Male"
 run_after_duration: 10ns
 run_duration: 500
+
+req_type: "custom"
