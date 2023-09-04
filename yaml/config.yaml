@@ -1,23 +1,29 @@
-req_type: "custom"
-number_of_requests: 200
-url: ""
-interval: 10
-func_2:
-  - method: "POST"
-    url: "http://localhost:1010/post1"
-    body:
-      name: "Termiii"
-      email: "tt@tikabodi.com"
-      token: "45yuhgdfrtyuiwop098uytghjko98w7yethjdiop098yutghjk"
-  - method: "POST"
-    url: "http://localhost:1010/post2"
-    body:
-      title: "Test me out"
-      body: "Are you really doing this  ?"
-  - method: "POST"
-    url: "http://localhost:1010/post3"
-    body:
-      age: 25
-      gender: "Male"
-run_after_duration: 10ns
-run_duration: 500
+# - req_type: "custom"
+#   custom_request:
+#     number_of_requests: 200
+#     interval: 10
+#     func_2:
+#       - method: "POST"
+#         url: "http://localhost:1010/post1"
+#         body:
+#           name: "Termiii"
+#           email: "tt@tikabodi.com"
+#           token: "45yuhgdfrtyuiwop098uytghjko98w7yethjdiop098yutghjk"
+#       - method: "POST"
+#         url: "http://localhost:1010/post2"
+#         body:
+#           title: "Test me out"
+#           body: "Are you really doing this  ?"
+#       - method: "POST"
+#         url: "http://localhost:1010/post3"
+#         body:
+#           age: 25
+#           gender: "Male"
+#     run_after_duration: 10ns
+#     run_duration: 500
+
+- req_type: "basic"
+  basic_request:
+    number_of_requests: 200
+    interval: 10
+    url: "https://google.com"
